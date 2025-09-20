@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小顔矯正・エステサロン 特別会員プランのご案内</title>
+    <title>vivie月額会員プランのご案内</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Rose Elegance -->
     <!-- Application Structure Plan: 
         This SPA guides a potential client through a decision-making journey.
-        1. Hero Section: Welcoming tone.
-        2. Problem/Solution Section: The interactive tabs have been removed. The section now features a single, highly refined line graph. This graph is designed to be both logical and easy to explain, clearly showing the diverging outcomes of "continuous care" versus a "one-off treatment" over time. The accompanying text is also updated to directly reference the graph's visual elements (solid vs. dotted line).
+        1. Hero Section: Welcoming tone with updated branding.
+        2. Problem/Solution Section: Features the user-preferred line graph model, showing "効果の体感" (Perceived Effect) vs. "効果の定着レベル" (Sustained Effect Level) to logically explain the value of continuous care. The accompanying text has also been reverted to match this specific graph.
         3. Plan Summary Table: A simplified, static table for a quick price overview.
         4. Interactive Simulator: The tool for users to select a specific plan and see a detailed breakdown of savings.
         5. Premium Options Details: Interactive cards that open a modal with detailed treatment info.
         6. Urgency/Bonus Section & Benefit 3 Details: Static sections explaining the sign-up bonuses.
-        This structure is now streamlined, focusing on the most effective, logical, and easy-to-explain visualization for the core sales argument.
+        This structure returns to the user's preferred explanatory model while retaining all other layout and branding improvements.
     -->
     <!-- Visualization & Content Choices: 
         - Report Info: Course pricing, 3-month recommendation, categorized options, and detailed treatment descriptions.
-        - Goal: Clearly present all information, using a single, highly persuasive graph that is easy for staff to explain.
+        - Goal: Clearly present all information using the user's preferred graph and explanation for the "3-month care" argument.
         - Viz/Presentation Method: 
-            1. A new version of the line graph. The data points are carefully selected to illustrate not just decay, but how continuous care raises the "baseline" effect level over time, while a single treatment's effect decays back to zero.
+            1. The "Effect vs. Sustenance" line graph has been restored, as it was deemed the most effective explanatory tool by the user.
             2. All other elements from the previous version are retained (calculator, modals, etc.).
         - Interaction: 
-            1. The "3-month care" section is now static again. The simulator and premium option modals remain the key interactive elements.
-        - Justification: While tabs offered flexibility, a single, powerful, and easy-to-explain visual is more effective in a sales context. This revised line graph is more logical than a bar chart for showing a trend over time and has been designed with data that makes the "stacking effect" of treatments visually obvious, directly supporting the narrative that staff needs to convey.
+            1. The "3-month care" section is static, with the restored graph. The simulator and premium option modals remain the key interactive elements.
+        - Justification: The user has identified a specific visual and narrative combination as the most effective for their needs. This version reverts to that specific combination, ensuring the final product is perfectly aligned with their communication strategy.
         - Library/Method: Chart.js, extensive DOM manipulation for the simulator and modals.
         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
     -->
@@ -129,8 +129,8 @@
 
     <header class="py-6 bg-white shadow-sm">
         <div class="container mx-auto px-6 text-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-brand-brown">特別会員プランのご案内</h1>
-            <p class="text-sm text-brand-rose mt-1">あなただけの美しさを育む、継続ケアという選択</p>
+            <h1 class="text-2xl md:text-3xl font-bold text-brand-brown">vivie月額会員プランのご案内</h1>
+            <p class="text-sm text-brand-rose mt-1">一番いい”ワタシ”を持続する継続ケアという選択</p>
         </div>
     </header>
 
@@ -139,7 +139,7 @@
         <section id="introduction" class="mb-16">
             <h2 class="section-title">理想の自分へ、最短で近づくために</h2>
             <p class="section-subtitle">
-                いつもご来店いただき、誠にありがとうございます。本日は、お客様の美しさを最大限に引き出し、その状態を維持するための特別なサブスクリプションプランをご提案させていただきます。
+                本日はご来店いただきありがとうございます。ご体感いただいた施術をより効果的に実感いただくためのサブスクリプションプランのご提案をさせていただきます。
             </p>
             <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg border border-brand-rose">
                 <h3 class="text-xl font-bold text-brand-brown mb-6 text-center">なぜ、3ヶ月の継続ケアが重要なのでしょうか？</h3>
@@ -147,10 +147,10 @@
                     <div class="order-2 md:order-1">
                         <h4 class="text-lg font-bold text-brand-brown mb-3">効果の定着プロセス</h4>
                         <p class="text-sm text-brand-brown mb-4 leading-relaxed">
-                            左のグラフをご覧ください。<strong class="text-brand-rose">実線</strong>のように、定期的にケアを続けると、一度下がった効果が次の施術で回復し、さらに高いレベルで安定していきます。これが「効果の定着」です。
+                            初回の施術後、効果は時間と共に少しずつ薄れてしまいます。しかし、効果が完全になくなる前に次の施術を重ねることで、美しさのベースラインが徐々に引き上げられていきます。3ヶ月後には、理想の状態が高いレベルで安定します。
                         </p>
                         <p class="text-sm text-brand-brown leading-relaxed">
-                            一方、<strong class="text-gray-400">点線</strong>のように単発の施術では、効果が時間と共に薄れて元の状態に戻ってしまいます。3ヶ月間継続することで、美しさのベースラインを引き上げ、安定した状態を目指せます。
+                            お顔の歪みやたるみは、日々の生活習慣が原因です。定期的なメンテナンスで<strong class="text-brand-rose">正しい位置を脳と筋肉に記憶させ、美しい状態を「当たり前」に</strong>していくことが、揺るぎない美しさへの一番の近道です。
                         </p>
                     </div>
                     <div class="order-1 md:order-2">
@@ -235,8 +235,14 @@
                         <div class="mb-6">
                             <h3 class="font-bold text-lg mb-3 text-brand-brown">Step 1: ご希望のケアを選択</h3>
                             <div class="flex flex-col sm:flex-row gap-2" id="course-selector">
-                                <button data-course="standard" class="flex-1 p-3 rounded-md btn-secondary active">小顔矯正＋ドライヘッドスパ</button>
-                                <button data-course="premium" class="flex-1 p-3 rounded-md btn-secondary">小顔矯正＋ドライヘッドスパ＋選べる肌質改善オプション</button>
+                                <button data-course="standard" class="flex-1 p-3 rounded-md btn-secondary active">
+                                    <span class="font-bold block text-sm">Standard Plan</span>
+                                    <span class="text-xs">小顔矯正＋ドライヘッドスパ</span>
+                                </button>
+                                <button data-course="premium" class="flex-1 p-3 rounded-md btn-secondary">
+                                    <span class="font-bold block text-sm">Premium Plan</span>
+                                    <span class="text-xs">小顔矯正＋ドライヘッドスパ＋選べる肌質改善オプション</span>
+                                </button>
                             </div>
                         </div>
                         <div>
@@ -306,9 +312,9 @@
         </section>
 
         <section id="benefits" class="mb-16">
-            <h2 class="section-title">本日ご契約いただいた方への3大特典</h2>
+            <h2 class="section-title">リニューアルオープン記念！<br>本日ご契約いただいた方への3大特典</h2>
              <p class="section-subtitle">
-                お客様の「きれいになりたい」という気持ちを全力でサポートするための、当日限定の特別なプレゼントです。
+                お客様の「きれいでありたい」という気持ちを全力でサポートするための、当日限定の特別なプレゼントです。
             </p>
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="bg-white p-6 rounded-lg shadow-lg border-2 border-brand-rose text-center transform hover:scale-105 transition-transform duration-300">
@@ -357,8 +363,8 @@
 
     <footer class="mt-16 py-8 bg-brand-light">
         <div class="container mx-auto px-6 text-center text-brand-rose">
-            <p class="font-bold text-lg mb-4">ご不明な点はございませんか？</p>
-            <p>プランの詳細や、お客様に最適なコースのご提案など、<br>どうぞお気軽にスタッフまでお声がけください。</p>
+            <p class="font-bold text-lg mb-4">facial salon vivie</p>
+            <p>ご不明な点はございませんか？<br>お気軽にスタッフまでお声がけください。</p>
         </div>
     </footer>
 
@@ -431,41 +437,23 @@
             const premiumOptionsContainer = document.getElementById('premium-options-container');
 
             new Chart(document.getElementById('sustainabilityChart').getContext('2d'), {
-                type: 'line', 
-                data: { 
-                    labels: ['初回', '2週後', '1ヶ月後', '1ヶ月半後', '2ヶ月後', '2ヶ月半後', '3ヶ月後'], 
-                    datasets: [
-                        { 
-                            label: '継続した場合', 
-                            data: [100, 80, 100, 85, 100, 90, 95], 
-                            borderColor: '#dba9a8', 
-                            backgroundColor: 'rgba(219, 169, 168, 0.1)', 
-                            fill: true, 
-                            tension: 0.1, 
-                            pointRadius: 4, 
-                            pointBackgroundColor: '#dba9a8',
-                            borderWidth: 3,
-                        }, 
-                        { 
-                            label: '単発で中断した場合', 
-                            data: [100, 60, 40, 30, 25, 20, 15], 
-                            borderColor: 'rgba(170, 170, 170, 0.7)', 
-                            borderDash: [5, 5], 
-                            tension: 0.4, 
-                            fill: false, 
-                            pointRadius: 0,
-                            borderWidth: 2,
-                        }
-                    ] 
+                type: 'line',
+                data: {
+                    labels: ['初回', '2週後', '4週後', '6週後', '8週後', '10週後', '3ヶ月後'],
+                    datasets: [{
+                        label: '効果の体感', data: [100, 75, 98, 80, 99, 85, 100],
+                        borderColor: '#dba9a8', backgroundColor: 'rgba(219, 169, 168, 0.1)',
+                        fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#dba9a8',
+                    }, {
+                        label: '効果の定着レベル', data: [20, 30, 45, 60, 70, 80, 85],
+                        borderColor: 'rgba(199, 139, 138, 0.7)', borderDash: [5, 5],
+                        tension: 0.4, fill: false, pointRadius: 0,
+                    }]
                 },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    scales: { y: { display: true, min: 0, max: 110, ticks: { callback: (value) => value + '% 効果レベル' } }, x: { grid: { display: false } } }, 
-                    plugins: { 
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
-                        tooltip: { enabled: true }
-                    } 
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { display: false, min: 0, max: 110 }, x: { grid: { display: false } } },
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }, tooltip: { enabled: false } }
                 }
             });
 
