@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小顔矯正・エステサロン 特別会員プランのご案内</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Rose Elegance -->
+    <!-- Application Structure Plan: 
+        This SPA guides a potential client through a decision-making journey.
+        1. Hero Section: Welcoming tone.
+        2. Problem/Solution Section: The interactive tabs have been removed. The section now features a single, highly refined line graph. This graph is designed to be both logical and easy to explain, clearly showing the diverging outcomes of "continuous care" versus a "one-off treatment" over time. The accompanying text is also updated to directly reference the graph's visual elements (solid vs. dotted line).
+        3. Plan Summary Table: A simplified, static table for a quick price overview.
+        4. Interactive Simulator: The tool for users to select a specific plan and see a detailed breakdown of savings.
+        5. Premium Options Details: Interactive cards that open a modal with detailed treatment info.
+        6. Urgency/Bonus Section & Benefit 3 Details: Static sections explaining the sign-up bonuses.
+        This structure is now streamlined, focusing on the most effective, logical, and easy-to-explain visualization for the core sales argument.
+    -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Course pricing, 3-month recommendation, categorized options, and detailed treatment descriptions.
+        - Goal: Clearly present all information, using a single, highly persuasive graph that is easy for staff to explain.
+        - Viz/Presentation Method: 
+            1. A new version of the line graph. The data points are carefully selected to illustrate not just decay, but how continuous care raises the "baseline" effect level over time, while a single treatment's effect decays back to zero.
+            2. All other elements from the previous version are retained (calculator, modals, etc.).
+        - Interaction: 
+            1. The "3-month care" section is now static again. The simulator and premium option modals remain the key interactive elements.
+        - Justification: While tabs offered flexibility, a single, powerful, and easy-to-explain visual is more effective in a sales context. This revised line graph is more logical than a bar chart for showing a trend over time and has been designed with data that makes the "stacking effect" of treatments visually obvious, directly supporting the narrative that staff needs to convey.
+        - Library/Method: Chart.js, extensive DOM manipulation for the simulator and modals.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FFF8F7;
+            color: #6B4F4F;
+        }
+        .text-brand-brown { color: #6B4F4F; }
+        .bg-brand-cream { background-color: #FFF8F7; }
+        .bg-brand-light { background-color: #F5E8E8; }
+        .bg-brand-rose { background-color: #dba9a8; }
+        .text-brand-rose { color: #C78B8A; }
+        .border-brand-rose { border-color: #dba9a8; }
+        
+        .btn-secondary {
+            background-color: #F5E8E8;
+            color: #6B4F4F;
+            border: 1px solid #dba9a8;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover, .btn-secondary.active {
+            background-color: #dba9a8;
+            color: #FFFFFF;
+            border-color: #C78B8A;
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #6B4F4F;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .section-subtitle {
+            text-align: center;
+            color: #8a7878;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+        }
+        .table-responsive-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .plan-table {
+            min-width: 500px;
+        }
+        .special-option-card {
+            background-color: #fffaf0;
+            border-color: #c59d5f;
+            position: relative;
+        }
+        .special-option-card .option-header {
+            color: #a77b3b;
+        }
+        .special-option-card::after {
+            content: 'SPECIAL';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #c59d5f;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 99px;
+            line-height: 1;
+        }
+        .modal-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+        .premium-option-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .premium-option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-brand-cream">
+
+    <header class="py-6 bg-white shadow-sm">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-brand-brown">特別会員プランのご案内</h1>
+            <p class="text-sm text-brand-rose mt-1">あなただけの美しさを育む、継続ケアという選択</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        
+        <section id="introduction" class="mb-16">
+            <h2 class="section-title">理想の自分へ、最短で近づくために</h2>
+            <p class="section-subtitle">
+                いつもご来店いただき、誠にありがとうございます。本日は、お客様の美しさを最大限に引き出し、その状態を維持するための特別なサブスクリプションプランをご提案させていただきます。
+            </p>
+            <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg border border-brand-rose">
+                <h3 class="text-xl font-bold text-brand-brown mb-6 text-center">なぜ、3ヶ月の継続ケアが重要なのでしょうか？</h3>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="order-2 md:order-1">
+                        <h4 class="text-lg font-bold text-brand-brown mb-3">効果の定着プロセス</h4>
+                        <p class="text-sm text-brand-brown mb-4 leading-relaxed">
+                            左のグラフをご覧ください。<strong class="text-brand-rose">実線</strong>のように、定期的にケアを続けると、一度下がった効果が次の施術で回復し、さらに高いレベルで安定していきます。これが「効果の定着」です。
+                        </p>
+                        <p class="text-sm text-brand-brown leading-relaxed">
+                            一方、<strong class="text-gray-400">点線</strong>のように単発の施術では、効果が時間と共に薄れて元の状態に戻ってしまいます。3ヶ月間継続することで、美しさのベースラインを引き上げ、安定した状態を目指せます。
+                        </p>
+                    </div>
+                    <div class="order-1 md:order-2">
+                         <div class="chart-container h-[250px] md:h-[300px]">
+                            <canvas id="sustainabilityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="plan-summary" class="mb-16">
+            <h2 class="section-title">料金プラン一覧</h2>
+            <p class="section-subtitle">
+                お客様の目的とライフスタイルに合わせて選べる2つの基本プランをご用意しております。
+            </p>
+            <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg border border-brand-rose table-responsive-wrapper">
+                <table class="w-full plan-table">
+                    <thead class="bg-brand-light">
+                        <tr>
+                            <th class="p-3 text-left font-bold text-brand-brown">プラン</th>
+                            <th class="p-3 text-left font-bold text-brand-brown">月額 (税込)</th>
+                            <th class="p-3 text-left font-bold text-brand-brown">1回あたり (税込)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b-4 border-brand-cream">
+                            <td colspan="3" class="p-3 font-bold bg-brand-light text-brand-brown">
+                                Standard <span class="font-normal text-sm">(小顔矯正＋ドライヘッドスパ)</span>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-brand-light">
+                            <td class="p-3">月1回</td>
+                            <td class="p-3 font-bold">8,800円</td>
+                            <td class="p-3">8,800円</td>
+                        </tr>
+                        <tr class="border-b border-brand-light">
+                            <td class="p-3">月2回</td>
+                            <td class="p-3 font-bold">15,400円</td>
+                            <td class="p-3">7,700円</td>
+                        </tr>
+                        <tr class="border-b border-brand-light">
+                            <td class="p-3">月4回 (Royal)</td>
+                            <td class="p-3 font-bold">27,500円</td>
+                            <td class="p-3">6,875円</td>
+                        </tr>
+
+                        <tr class="border-b-4 border-t-8 border-brand-cream">
+                             <td colspan="3" class="p-3 font-bold bg-brand-light text-brand-brown">
+                                Premium <span class="font-normal text-sm">(基本施術＋選べるオプション2種)</span>
+                            </td>
+                        </tr>
+                         <tr class="border-b border-brand-light">
+                            <td class="p-3">月1回</td>
+                            <td class="p-3 font-bold">12,100円</td>
+                            <td class="p-3">12,100円</td>
+                        </tr>
+                        <tr class="border-b border-brand-light">
+                            <td class="p-3">月2回</td>
+                            <td class="p-3 font-bold">22,000円</td>
+                            <td class="p-3">11,000円</td>
+                        </tr>
+                        <tr class="border-b border-brand-light">
+                            <td class="p-3">月4回 (Premium+)</td>
+                            <td class="p-3 font-bold">39,500円</td>
+                            <td class="p-3">9,875円</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="simulator" class="mb-16">
+            <h2 class="section-title">料金シミュレーター</h2>
+            <p class="section-subtitle">
+                ご希望のプランを選択して、お得な料金を詳しくご確認ください。
+            </p>
+
+            <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg border border-brand-rose">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <div class="mb-6">
+                            <h3 class="font-bold text-lg mb-3 text-brand-brown">Step 1: ご希望のケアを選択</h3>
+                            <div class="flex flex-col sm:flex-row gap-2" id="course-selector">
+                                <button data-course="standard" class="flex-1 p-3 rounded-md btn-secondary active">小顔矯正＋ドライヘッドスパ</button>
+                                <button data-course="premium" class="flex-1 p-3 rounded-md btn-secondary">小顔矯正＋ドライヘッドスパ＋選べる肌質改善オプション</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-brand-brown">Step 2: ご希望の頻度を選択</h3>
+                            <div class="grid grid-cols-3 gap-2" id="frequency-selector">
+                                <button data-freq="1" class="p-3 rounded-md btn-secondary">月1回</button>
+                                <button data-freq="2" class="p-3 rounded-md btn-secondary active relative">
+                                    月2回
+                                    <span class="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">一番人気</span>
+                                </button>
+                                <button data-freq="4" class="p-3 rounded-md btn-secondary relative">
+                                    月4回
+                                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">おすすめ</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-brand-light p-6 rounded-lg flex flex-col justify-between">
+                        <div class="text-center">
+                            <p class="text-sm text-brand-rose">選択中のプラン</p>
+                            <p id="plan-name" class="text-2xl font-bold text-brand-brown my-1">Standard</p>
+                            <p id="plan-description" class="text-sm text-gray-600 mb-4 h-10">小顔矯正＋ドライヘッドスパ</p>
+                            
+                            <p class="text-sm text-brand-rose mt-2">月額料金（税込）</p>
+                            <p class="mb-2"><span id="monthly-price" class="text-4xl font-bold text-brand-brown">15,400</span><span class="text-lg ml-1">円</span></p>
+                        </div>
+                        <div class="mt-4 bg-white p-4 rounded-lg shadow-inner text-center">
+                            <p class="text-xs text-gray-500">通常月額合計: <span id="normal-monthly-total" class="line-through">22,000円</span></p>
+                             <div class="px-2">
+                                <p class="font-bold"><span id="savings-amount" class="text-3xl text-red-500">6,600</span><span class="text-brand-brown text-sm ml-1">円お得！</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-8 border-t border-brand-rose">
+                    <h3 class="font-bold text-lg mb-4 text-center text-brand-brown">1回あたりの料金比較</h3>
+                     <div id="price-comparison-display" class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-inner text-center">
+                        <div class="flex justify-around items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">通常価格</p>
+                                <p id="comparison-normal" class="text-2xl font-bold text-gray-500 line-through">11,000円</p>
+                            </div>
+                            <div class="text-2xl font-bold text-brand-rose">→</div>
+                            <div>
+                                <p class="text-sm text-brand-rose">会員様価格</p>
+                                <p id="comparison-member" class="text-3xl font-bold text-brand-brown">7,700円</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 bg-red-100 border border-red-300 text-red-600 font-bold py-2 px-4 rounded-lg text-lg">
+                            1回あたり <span id="comparison-savings" class="text-2xl">3,300</span> 円もお得！
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="premium-options" class="mb-16 hidden">
+            <h2 class="section-title">Premium Plan Options</h2>
+            <p class="section-subtitle">
+                Premiumプランでは、基本の施術に加え、以下の中からお悩みに合わせて毎回2つのオプションをお選びいただけます。<br>気になるお悩みをクリックすると、詳細をご確認いただけます。
+            </p>
+            <div id="premium-options-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Premium options will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <section id="benefits" class="mb-16">
+            <h2 class="section-title">本日ご契約いただいた方への3大特典</h2>
+             <p class="section-subtitle">
+                お客様の「きれいになりたい」という気持ちを全力でサポートするための、当日限定の特別なプレゼントです。
+            </p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg border-2 border-brand-rose text-center transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-3xl font-bold text-brand-rose mb-2">特典 1</div>
+                    <h3 class="text-lg font-bold text-brand-brown mb-3">会員登録費<br>¥5,000 → <span class="text-red-500 text-xl">無料</span></h3>
+                    <p class="text-sm text-gray-600">初回登録手数料が一切かからず、お得にスタートしていただけます。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg border-2 border-brand-rose text-center transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-3xl font-bold text-brand-rose mb-2">特典 2</div>
+                    <h3 class="text-lg font-bold text-brand-brown mb-3">3ヶ月以内の解約でも<br><span class="text-red-500 text-xl">解約金 ¥10,000 が無料</span></h3>
+                    <p class="text-sm text-gray-600">まずは効果を実感していただきたいから。安心して始められるお試し期間です。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg border-2 border-brand-rose text-center transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-3xl font-bold text-brand-rose mb-2">特典 3</div>
+                    <h3 class="text-lg font-bold text-brand-brown mb-3">オプションメニューが<br><span class="text-red-500 text-xl">永久特別価格</span></h3>
+                    <p class="text-sm text-gray-600">人気のハーブピーリングなどもずっとお得にご利用可能に！詳細は下記をご覧ください。</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="benefit-3-details">
+            <h2 class="section-title">特典3：オプションメニュー特別価格一覧</h2>
+            <p class="section-subtitle">
+                会員様は、以下の豊富なオプションメニューをいつでも永久に特別価格でご利用いただけます。
+            </p>
+            <div id="options-list-container" class="space-y-10">
+                <!-- Option cards will be injected here by JS -->
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Premium Option Detail Modal -->
+    <div id="premium-detail-modal" class="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center p-4 z-50 opacity-0 pointer-events-none modal-overlay">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-content transform scale-95">
+            <div class="sticky top-0 bg-white p-4 border-b flex justify-between items-center z-10">
+                <h3 id="premium-modal-title" class="text-xl font-bold text-brand-brown"></h3>
+                <button id="premium-modal-close-btn" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="premium-modal-content" class="p-6 space-y-4">
+                <!-- Content will be injected by JS -->
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="mt-16 py-8 bg-brand-light">
+        <div class="container mx-auto px-6 text-center text-brand-rose">
+            <p class="font-bold text-lg mb-4">ご不明な点はございませんか？</p>
+            <p>プランの詳細や、お客様に最適なコースのご提案など、<br>どうぞお気軽にスタッフまでお声がけください。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const planData = {
+                standard: {
+                    name: "Standard",
+                    description: "小顔矯正＋ドライヘッドスパ",
+                    normalPrice: 11000,
+                    frequencies: {
+                        1: { monthly: 8800, session: 8800 },
+                        2: { monthly: 15400, session: 7700 },
+                        4: { name: "Royal", monthly: 27500, session: 6875 }
+                    }
+                },
+                premium: {
+                    name: "Premium",
+                    description: "小顔矯正＋ドライヘッドスパ＋選べる肌質改善オプション",
+                    normalPrice: 16500,
+                    frequencies: {
+                        1: { monthly: 12100, session: 12100 },
+                        2: { monthly: 22000, session: 11000 },
+                        4: { name: "Premium+", monthly: 39500, session: 9875 }
+                    }
+                }
+            };
+            
+            const optionMenuData = [
+                { type: 'basic', name: 'スカルプケア', normal: 5500, member: 3300, desc: '頭皮の血行を促進し、お顔全体のリフトアップ効果を高めます。', concerns: ['頭皮のコリ・目の疲れ', '顔全体が下がってきた'] },
+                { type: 'basic', name: 'ハイドラ', normal: 5500, member: 3300, desc: '毛穴の汚れをスッキリ洗浄し、ワントーン明るい透明感のある肌へ導きます。', concerns: ['毛穴の黒ずみ・ざらつき', '肌のくすみ'] },
+                { type: 'basic', name: 'EMS', normal: 5500, member: 3300, desc: '普段使わない表情筋を電気の力で動かし、シャープなフェイスラインを形成します。', concerns: ['フェイスラインのもたつき', 'ほうれい線'] },
+                { type: 'basic', name: 'ラジオ波', normal: 5500, member: 3300, desc: '肌の深部を温めコラーゲン生成を促進。内側からハリと弾力をUPさせます。', concerns: ['肌のハリ不足・小じわ', 'たるみ予防'] },
+                { type: 'basic', name: 'プラズマ', normal: 5500, member: 3300, desc: '高い殺菌力で肌トラブルを鎮静化させ、美容液の浸透力を高めます。', concerns: ['ニキビ・肌荒れ', '肌質を根本改善したい'] },
+                { type: 'special', name: 'よもぎ蒸し', normal: 5500, member: 3300, desc: '体の芯から温め血行を促進。デトックス効果や婦人科系のお悩みをサポート。', concerns: ['冷え性・むくみ', 'デトックスしたい'] },
+                { type: 'special', name: 'レモンボトル2cc', normal: 11000, member: 7700, desc: '脂肪溶解成分で気になる箇所に直接アプローチ。シャープな輪郭を目指します。', concerns: ['二重あご', 'フェイスラインのもたつき'] },
+                { type: 'special', name: 'ハーブピーリング', normal: 11000, member: 8800, desc: '天然成分で肌の再生を促し、ニキビ跡や毛穴の目立ちにくい滑らかな肌へ。', concerns: ['ニキビ跡', '毛穴の開き・黒ずみ'] },
+                { type: 'special', name: 'フェイシャルワックス', normal: 8800, member: 6600, desc: '顔の産毛を除去し、化粧ノリを格段にUP。肌のトーンアップ効果も期待できます。', concerns: ['化粧ノリが悪い', '肌のくすみ・ごわつき'] },
+            ];
+
+            const premiumOptionDetails = {
+                scalp: { id: 'scalp', title: 'スカルプケア', effect: '頭皮の血行を促進し、硬くなった筋肉をほぐすことで、顔全体のリフトアップ効果や眼精疲労の軽減が期待できます。', concerns: ['顔のたるみ', '目の疲れ', '頭皮のコリ'], mechanism: '頭皮と顔の皮膚は一枚で繋がっています。PC作業やストレスで凝り固まった頭部の筋肉を直接マッサージすることで、血流が改善し、それに伴って顔の皮膚が引き上げられ、むくみも解消されやすくなります。' },
+                hydra: { id: 'hydra', title: 'ハイドラ', effect: '美容液による水流を利用して、毛穴の奥の汚れや古い角質を優しく洗浄します。肌のトーンアップと透明感向上に繋がります。', concerns: ['毛穴の黒ずみ・ざらつき', '肌のくすみ', 'ニキビ予防'], mechanism: '普段の洗顔では落としきれない毛穴の詰まりや皮脂汚れを、肌に負担をかけずに吸引・洗浄します。美容成分を同時に補給するため、施術後は潤いのある滑らかな肌を実感できます。' },
+                ems: { id: 'ems', title: 'EMS', effect: '電気の力で深層の表情筋を強制的に動かし、普段使わない筋肉を鍛えます。これにより、フェイスラインが引き締まり、シャープな印象になります。', concerns: ['フェイスラインのもたつき', 'ほうれい線', 'たるみ'], mechanism: '年齢と共に衰えがちな表情筋は、セルフケアではなかなか鍛えることが困難です。EMSは、その深層筋に直接アプローチし、筋肉量を増やすことで、内側から肌を支える力を強化し、たるみを根本から改善に導きます。' },
+                rf: { id: 'rf', title: 'ラジオ波(RF)', effect: '高周波の熱エネルギーを肌の深部に届け、コラーゲンの生成を促進します。肌の内側からハリと弾力を取り戻す効果が期待できます。', concerns: ['肌のハリ不足', '小じわ', 'たるみ予防'], mechanism: 'ラジオ波は、皮膚の深層にある真皮層を温めることができます。この温熱効果により、既存のコラーゲン線維が収縮して即時的な引き締め効果が生まれると共に、線維芽細胞が活性化され、新しいコラーゲンやエラスチンの生成が長期的に促進されます。' },
+                plasma: { id: 'plasma', title: 'プラズマ', effect: '高い殺菌力でアクネ菌などを除去し、肌トラブルを鎮静化させます。また、一時的に肌の吸収力を高めるため、後に使う美容液の浸透を飛躍的に向上させます。', concerns: ['ニキビ・肌荒れ', '肌質改善', '美容液の効果を高めたい'], mechanism: 'プラズマエネルギーは、強力な滅菌作用を持つと同時に、細胞間の結合を一時的に緩める「ドラッグデリバリーシステム」としての役割を果たします。これにより、通常では浸透しにくい高分子の美容成分も肌の奥まで届けることが可能になります。' }
+            };
+
+            let currentCourse = 'standard';
+            let currentFreq = '2'; 
+
+            // DOM Elements
+            const courseSelector = document.getElementById('course-selector');
+            const frequencySelector = document.getElementById('frequency-selector');
+            const planNameEl = document.getElementById('plan-name');
+            const planDescriptionEl = document.getElementById('plan-description');
+            const monthlyPriceEl = document.getElementById('monthly-price');
+            const savingsAmountEl = document.getElementById('savings-amount');
+            const normalMonthlyTotalEl = document.getElementById('normal-monthly-total');
+            const premiumOptionsSection = document.getElementById('premium-options');
+            const comparisonNormalEl = document.getElementById('comparison-normal');
+            const comparisonMemberEl = document.getElementById('comparison-member');
+            const comparisonSavingsEl = document.getElementById('comparison-savings');
+            
+            // Modal Elements
+            const premiumDetailModal = document.getElementById('premium-detail-modal');
+            const premiumModalTitle = document.getElementById('premium-modal-title');
+            const premiumModalContent = document.getElementById('premium-modal-content');
+            const premiumModalCloseBtn = document.getElementById('premium-modal-close-btn');
+            const premiumOptionsContainer = document.getElementById('premium-options-container');
+
+            new Chart(document.getElementById('sustainabilityChart').getContext('2d'), {
+                type: 'line', 
+                data: { 
+                    labels: ['初回', '2週後', '1ヶ月後', '1ヶ月半後', '2ヶ月後', '2ヶ月半後', '3ヶ月後'], 
+                    datasets: [
+                        { 
+                            label: '継続した場合', 
+                            data: [100, 80, 100, 85, 100, 90, 95], 
+                            borderColor: '#dba9a8', 
+                            backgroundColor: 'rgba(219, 169, 168, 0.1)', 
+                            fill: true, 
+                            tension: 0.1, 
+                            pointRadius: 4, 
+                            pointBackgroundColor: '#dba9a8',
+                            borderWidth: 3,
+                        }, 
+                        { 
+                            label: '単発で中断した場合', 
+                            data: [100, 60, 40, 30, 25, 20, 15], 
+                            borderColor: 'rgba(170, 170, 170, 0.7)', 
+                            borderDash: [5, 5], 
+                            tension: 0.4, 
+                            fill: false, 
+                            pointRadius: 0,
+                            borderWidth: 2,
+                        }
+                    ] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { y: { display: true, min: 0, max: 110, ticks: { callback: (value) => value + '% 効果レベル' } }, x: { grid: { display: false } } }, 
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
+                        tooltip: { enabled: true }
+                    } 
+                }
+            });
+
+            function updateDisplay() {
+                const course = planData[currentCourse];
+                const freqData = course.frequencies[currentFreq];
+                let planDisplayName = course.name;
+                if (currentFreq == '4' && freqData.name) planDisplayName = freqData.name;
+                
+                const totalNormalPrice = course.normalPrice * parseInt(currentFreq, 10);
+                const monthlySavings = totalNormalPrice - freqData.monthly;
+                const perSessionSaving = course.normalPrice - freqData.session;
+
+                planNameEl.textContent = planDisplayName;
+                planDescriptionEl.textContent = course.description;
+                monthlyPriceEl.textContent = freqData.monthly.toLocaleString();
+                savingsAmountEl.textContent = monthlySavings.toLocaleString();
+                normalMonthlyTotalEl.textContent = totalNormalPrice.toLocaleString() + '円';
+                
+                comparisonNormalEl.textContent = course.normalPrice.toLocaleString() + '円';
+                comparisonMemberEl.textContent = Math.round(freqData.session).toLocaleString() + '円';
+                comparisonSavingsEl.textContent = Math.round(perSessionSaving).toLocaleString();
+
+                premiumOptionsSection.classList.toggle('hidden', currentCourse !== 'premium');
+                updateActiveButtons();
+            }
+
+            function updateActiveButtons() {
+                courseSelector.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.course === currentCourse));
+                frequencySelector.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.freq === currentFreq));
+            }
+            
+            function populateOptionsList() {
+                const container = document.getElementById('options-list-container');
+                if (!container) return;
+                
+                const basicOptions = optionMenuData.filter(item => item.type === 'basic');
+                const specialOptions = optionMenuData.filter(item => item.type === 'special');
+
+                let content = '<div>';
+                content += '<h3 class="text-xl font-bold text-brand-brown mb-4 border-b-2 border-brand-rose pb-2">Basic オプション</h3>';
+                content += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+                basicOptions.forEach(item => { content += createOptionCard(item); });
+                content += '</div></div>';
+
+                content += '<div>';
+                content += '<h3 class="text-xl font-bold text-brand-brown mb-4 border-b-2 border-brand-rose pb-2">Special オプション</h3>';
+                content += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+                specialOptions.forEach(item => { content += createOptionCard(item, true); });
+                content += '</div></div>';
+                
+                container.innerHTML = content;
+            }
+
+            function createOptionCard(item, isSpecial = false) {
+                const cardClass = isSpecial ? 'special-option-card' : '';
+                return `
+                    <div class="bg-white p-4 rounded-lg shadow border ${cardClass}" style="${isSpecial ? '' : 'border-color: #dba9a8;'}">
+                        <h4 class="font-bold text-center mb-2 option-header" style="${isSpecial ? '' : 'color: #6B4F4F;'}">${item.name}</h4>
+                        <p class="text-sm text-gray-600 mt-1 flex-grow">${item.desc}</p>
+                        <div class="mt-3 pt-3 border-t border-gray-200">
+                            <p class="text-xs font-bold text-brand-rose">▼こんなお悩みに</p>
+                            <ul class="text-xs text-gray-500 list-disc list-inside mt-1 space-y-1">
+                                ${item.concerns.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-gray-200 border-dashed text-center">
+                            <p class="text-xs text-gray-500">通常 <span class="line-through">¥${item.normal.toLocaleString()}</span></p>
+                            <p class="text-sm font-bold text-brand-rose">会員様価格 ¥${item.member.toLocaleString()}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function populatePremiumOptions() {
+                let content = '';
+                Object.values(premiumOptionDetails).forEach(data => {
+                    content += `
+                        <div class="bg-white p-4 rounded-lg shadow border border-brand-rose premium-option-card" data-option-id="${data.id}">
+                            <h4 class="font-bold text-center text-brand-brown mb-2 pointer-events-none">${data.title}</h4>
+                            <div class="mt-2 pt-2 border-t border-gray-200 flex-grow pointer-events-none">
+                                <p class="text-xs font-bold text-brand-rose">▼こんなお悩みに</p>
+                                <ul class="text-xs text-gray-500 list-disc list-inside mt-1 space-y-1">
+                                    ${data.concerns.map(c => `<li>${c}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="mt-auto pt-3 text-center">
+                                <span class="text-sm font-semibold text-brand-rose underline">詳細・解決の仕組みはこちら</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                premiumOptionsContainer.innerHTML = content;
+            }
+
+            function openPremiumModal(optionId) {
+                const data = premiumOptionDetails[optionId];
+                if (!data) return;
+
+                premiumModalTitle.textContent = data.title;
+                premiumModalContent.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-brand-rose">期待できる効果</h4>
+                        <p class="text-sm text-brand-brown mt-1">${data.effect}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-brand-rose">こんなお悩みに</h4>
+                        <p class="text-sm text-brand-brown mt-1">${data.concerns.join(' / ')}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-brand-rose">なぜ解消できるの？</h4>
+                        <p class="text-sm text-brand-brown mt-1">${data.mechanism}</p>
+                    </div>
+                `;
+                premiumDetailModal.classList.remove('opacity-0', 'pointer-events-none');
+                premiumDetailModal.querySelector('.modal-content').classList.remove('scale-95');
+            }
+
+            function closePremiumModal() {
+                premiumDetailModal.classList.add('opacity-0');
+                premiumDetailModal.querySelector('.modal-content').classList.add('scale-95');
+                setTimeout(() => {
+                    premiumDetailModal.classList.add('pointer-events-none');
+                }, 300);
+            }
+            
+            courseSelector.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') { currentCourse = e.target.dataset.course; updateDisplay(); }
+            });
+
+            frequencySelector.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') { currentFreq = e.target.dataset.freq; updateDisplay(); }
+            });
+            
+            premiumOptionsContainer.addEventListener('click', (e) => {
+                const card = e.target.closest('.premium-option-card');
+                if(card && card.dataset.optionId) {
+                    openPremiumModal(card.dataset.optionId);
+                }
+            });
+
+            premiumModalCloseBtn.addEventListener('click', closePremiumModal);
+            premiumDetailModal.addEventListener('click', (e) => {
+                if(e.target === premiumDetailModal) {
+                    closePremiumModal();
+                }
+            });
+            
+            updateDisplay();
+            populateOptionsList();
+            populatePremiumOptions();
+        });
+    </script>
+</body>
+</html>
